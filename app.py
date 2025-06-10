@@ -20,16 +20,18 @@ def index():
 def select_movies():
     if request.method == 'POST':
         selected_genres = request.form.getlist('genres')
-        print(selected_genres)
         azure_function_url = "http://localhost:7071/api/HttpTriggerGGSM"
         payload = {"genres": selected_genres}
         headers = {'Content-Type': 'application/json'}
         response = requests.post(azure_function_url, json=payload, headers=headers)
+        movie_titles = {}
         if response.status_code == 200:
+            movie_titles = response.json()
             print("Genres sent successfully to Azure Function.")
+        
         else:
             print(f"Failed to send genres. Status code: {response.status_code}")
-        return render_template("select-liked-movies.html", selected_genres=selected_genres, az_response=response.text)
+        return render_template("select-liked-movies.html", selected_genres=selected_genres, movie_titles=movie_titles)
     return render_template("select-liked-movies.html")
 
 @app.route('/recommend-movies')

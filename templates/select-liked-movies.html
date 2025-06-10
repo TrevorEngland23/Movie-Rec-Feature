@@ -2,14 +2,16 @@
 <h3>Based on your favorite genres, these are some movies you may have seen.</h3>
 
 <form method="post" action="/recommend-movies">
-    {% for movie in movies %}
-    <label>
-        <input type="checkbox" name="movies" value="{{ movie.title }}">
-        {{ movie.title }} ({{ movie.genre }})
-        {% if movie.poster_url %}
-        <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_url }}" alt="{{ movie.title}}">
-        {% endif %}
-    </label><br>
-    {% endfor %}
+    {% if movie_titles %}
+        {% for genre, titles in movie_titles.items() %}
+            <h3>{{ genre|upper }}</h3>
+            {% for title in titles %}
+                <label>
+                    <input type="checkbox" name="movies" value="{{ title }}">
+                    {{ title }}
+                </label><br>
+            {% endfor %}
+        {% endfor %}
     <button type="submit">Get Recommendations</button>
+    {% endif %}
 </form>
