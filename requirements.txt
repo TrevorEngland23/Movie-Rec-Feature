@@ -3,4 +3,5 @@ Flask==3.1.1
 numpy==2.0.2
 pandas==2.3.0
 requests==2.32.4
+azure-storage-blob==12.16.0
 

@@ -1,0 +1,26 @@
+<h1>Recommendation Questionnaire</h1>
+<h2>Select 3-5 movie genres that you enjoy</h2>
+<form method="post" action="/select-movies">
+    {% for genre in genres %}
+    <label>
+        <input type="checkbox" name="genres" value="{{ genre }}"> {{ genre}}
+    </label><br>
+    {% endfor %}
+    <button type="submit">Next</button>
+</form>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const maxChecked = 5;
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                if (checkedCount > maxChecked) {
+                    checkbox.checked = false;
+                    alert(`You can only select up to ${maxChecked} genres.`);
+                }
+            });
+        });
+    });
+</script>
