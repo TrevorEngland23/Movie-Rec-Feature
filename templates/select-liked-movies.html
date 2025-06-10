@@ -1,0 +1,15 @@
+<h2>Select movies you enjoy.</h2>
+<h3>Based on your favorite genres, these are some movies you may have seen.</h3>
+
+<form method="post" action="/recommend-movies">
+    {% for movie in movies %}
+    <label>
+        <input type="checkbox" name="movies" value="{{ movie.title }}">
+        {{ movie.title }} ({{ movie.genre }})
+        {% if movie.poster_url %}
+        <img src="https://image.tmdb.org/t/p/w200{{ movie.poster_url }}" alt="{{ movie.title}}">
+        {% endif %}
+    </label><br>
+    {% endfor %}
+    <button type="submit">Get Recommendations</button>
+</form>

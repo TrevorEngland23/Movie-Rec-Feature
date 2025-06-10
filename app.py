@@ -14,13 +14,14 @@ def index():
     genres = get_genre_names()
     return render_template("genre_selection.html", genres=genres)
 
-@app.route('/genre-selection')
-def genre_selection():
-    return "This is the genre selection page."
+# @app.route('/submit-genre', methods=['POST'])
 
-@app.route('/liked-movies')
+@app.route('/liked-movies', methods=['GET', 'POST'])
 def select_movies():
-    return "Select your movies from this list"
+    if request.method == 'POST':
+        selected_genres = request.form.getlist('genres')
+        return render_template("select-liked-movies.html", selected_genres=selected_genres)
+    return render_template("select-liked-movies.html")
 
 @app.route('/recommend-movies')
 def movie_recommendations():

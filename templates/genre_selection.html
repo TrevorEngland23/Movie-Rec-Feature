@@ -1,6 +1,6 @@
 <h1>Recommendation Questionnaire</h1>
 <h2>Select 3-5 movie genres that you enjoy</h2>
-<form method="post" action="/select-movies">
+<form method="POST" action="/liked-movies">
     {% for genre in genres %}
     <label>
         <input type="checkbox" name="genres" value="{{ genre }}"> {{ genre}}
