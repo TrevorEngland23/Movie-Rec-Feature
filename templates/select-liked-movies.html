@@ -1,10 +1,16 @@
-<h2>Select movies you enjoy.</h2>
-<h3>Based on your favorite genres, these are some movies you may have seen.</h3>
+{% extends "base.html" %}
+
+{% block title %}Select Movies{% endblock %}
+
+{% block content %}
+<h1><b>Movie Recommendation Questionnaire</b></h1>
+<h3>Select movies you enjoy.</h3>
+<h4>Based on your favorite genres, these are some movies you may have seen.</h4>
 
 <form method="post" action="/recommend-movies">
     {% if movie_titles %}
         {% for genre, titles in movie_titles.items() %}
-            <h3>{{ genre|upper }}</h3>
+            <h3>Category: {{ genre|upper }}</h3>
             {% for title in titles %}
                 <label>
                     <input type="checkbox" name="movies" value="{{ title }}">
@@ -12,6 +18,25 @@
                 </label><br>
             {% endfor %}
         {% endfor %}
+        <br>
     <button type="submit">Get Recommendations</button>
     {% endif %}
 </form>
+{% endblock %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const maxChecked = 20;
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                if (checkedCount > maxChecked) {
+                    checkbox.checked = false;
+                    alert(`You can only select up to ${maxChecked} genres.`);
+                }
+            });
+        });
+    });
+</script>

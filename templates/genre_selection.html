@@ -1,13 +1,19 @@
-<h1>Recommendation Questionnaire</h1>
-<h2>Select 3-5 movie genres that you enjoy</h2>
+{% extends "base.html" %}
+{% block title %}Genre Selection{% endblock %}
+{% block content %}
+<h1><b>Recommendation Questionnaire</b></h1>
+<h3>Please select up to 5 of your favorite movie genres.</h3>
+<br>
 <form method="POST" action="/liked-movies">
     {% for genre in genres %}
     <label>
-        <input type="checkbox" name="genres" value="{{ genre }}"> {{ genre}}
+        <input type="checkbox" name="genres" value="{{ genre }}"> {{ genre|capitalize }}
     </label><br>
     {% endfor %}
+    <br>
     <button type="submit">Next</button>
 </form>
+{% endblock %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
