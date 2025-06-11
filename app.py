@@ -34,9 +34,25 @@ def select_movies():
         return render_template("select-liked-movies.html", selected_genres=selected_genres, movie_titles=movie_titles)
     return render_template("select-liked-movies.html")
 
-@app.route('/recommend-movies')
+@app.route('/recommend-movies', methods=['GET', 'POST'])
 def movie_recommendations():
-    return "These are 10 movies you should check out"
+    if request.method == 'POST':
+        selected_movies = request.form.getlist('movies')
+        print(f"Selected movies: {selected_movies}")
+        azure_function_url_two = "http://localhost:7071/api/HttpTriggerMovieRecs"
+        payload = {"movies": selected_movies}
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(azure_function_url_two, json=payload, headers=headers)
+        recommended_movies = {}
+        if response.status_code == 200:
+            recommended_movies = response.json()
+            print(f"Selected movies sent successfully to Azure Function {azure_function_url_two}.")
+        
+        else:
+            print(f"Failed to send selected movies. Status code: {response.status_code}")
+            # Update this to handle multiple values for movie recommendation
+        return render_template("movie-recommendations.html", recommended_movies=recommended_movies)
+    return render_template("movie-recommendations.html")
 
 if __name__ == '__main__':
     app.run(debug=True, port=5050)

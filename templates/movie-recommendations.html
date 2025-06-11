@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Movie Recommendations{% endblock %}
+
+{% block content %}
+{% if recommended_movies.recommended_movies %}
+    <h2>Recommended Movies</h2>
+    <ul>
+    {% for title in recommended_movies.recommended_movies %}
+        <li>{{ title }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}
