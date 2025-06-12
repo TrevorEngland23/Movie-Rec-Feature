@@ -32,9 +32,7 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
     if not genres:
         return func.HttpResponse("No genres receieved. Pass genres in request body as JSON.", status_code=400)
         
-    # account_url = "https://c964capstone1121312.blob.core.windows.net"
     azure_sas_token = os.getenv("AZURE_SAS_TOKEN")
-    # container_name = "tmdbfilteredgenres"
     blob_service_client = BlobServiceClient(account_url=STORAGE_BASE_URL, credential=azure_sas_token)
     container_client = blob_service_client.get_container_client(STORAGE_CONTAINER)
     # find relevant datasets for each genre passed in the request
@@ -52,17 +50,17 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
 
                 # Filter for valid vote_average, release_date, and runtime >= 30
                 filtered_df = df[
+                    df['title'].notna() &
                     df['vote_average'].notna() &
                     df['release_date'].notna() &
                     df['runtime'].notna() &
-                    (df['runtime'] >= 30)
+                    (df['runtime'] >= 30) &
+                    df['original_language'].isin(['en', 'es'])
                 ]
 
                 # Sample up to 20 from the filtered DataFrame
                 random_twenty = filtered_df.sample(n=min(20, len(filtered_df)), random_state=None)
                 movie_builder = []
-
-
 
                 for _, row in random_twenty.iterrows():
 
