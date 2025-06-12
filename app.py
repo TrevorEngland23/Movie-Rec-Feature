@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect, url_for
 import requests
 import pandas as pd
 import os
 from scripts.get_genres import get_genre_names
 
 app = Flask(__name__)
+app.secret_key = ""
 
 @app.route('/')
 def home():
@@ -19,20 +20,28 @@ def index():
 @app.route('/liked-movies', methods=['GET', 'POST'])
 def select_movies():
     if request.method == 'POST':
+        shuffle = request.form.get('shuffle')
         selected_genres = request.form.getlist('genres')
+        session['selected_genres'] = selected_genres
         azure_function_url = "http://localhost:7071/api/HttpTriggerGGSM"
         payload = {"genres": selected_genres}
         headers = {'Content-Type': 'application/json'}
         response = requests.post(azure_function_url, json=payload, headers=headers)
-        movie_titles = {}
+        movie_data = {}
         if response.status_code == 200:
-            movie_titles = response.json()
+            movie_data = response.json()
+            # print(movie_data['action'][0].get('title', 'No title found'))
+            # print(movie_data)
             print("Genres sent successfully to Azure Function.")
+            print("Genres being reshuffled:", selected_genres)
+
         
         else:
             print(f"Failed to send genres. Status code: {response.status_code}")
-        return render_template("select-liked-movies.html", selected_genres=selected_genres, movie_titles=movie_titles)
-    return render_template("select-liked-movies.html")
+
+        return render_template("select-liked-movies.html", selected_genres=selected_genres, movie_data=movie_data)
+    selected_genres = session.get('selected_genres', [])
+    return render_template("select-liked-movies.html", selected_genres=selected_genres)
 
 @app.route('/recommend-movies', methods=['GET', 'POST'])
 def movie_recommendations():

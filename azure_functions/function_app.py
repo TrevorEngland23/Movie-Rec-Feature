@@ -8,6 +8,7 @@ import pandas as pd
 import io
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
 app = func.FunctionApp()
 
 STORAGE_ACCOUNT = "c964capstone1121312"
@@ -18,8 +19,7 @@ STORAGE_BASE_URL = f"https://{STORAGE_ACCOUNT}.blob.core.windows.net"
 def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    TMDB_BASE_URL = "https://api.themoviedb.org/3"
-    TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
+
     genres = None
     
     try:
@@ -37,9 +37,10 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
     # container_name = "tmdbfilteredgenres"
     blob_service_client = BlobServiceClient(account_url=STORAGE_BASE_URL, credential=azure_sas_token)
     container_client = blob_service_client.get_container_client(STORAGE_CONTAINER)
-
     # find relevant datasets for each genre passed in the request
     # relevant_datasets = []
+
+    image_base_url="https://image.tmdb.org/t/p/w300"
     results = {}
     for genre in genres:
         blob_name = f"{genre}.csv"
@@ -49,10 +50,28 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
                 blob_data = blob_client.download_blob().readall()
                 df = pd.read_csv(io.BytesIO(blob_data))
                 random_twenty = df.sample(n=min(20, len(df)), random_state=None)
-                movie_titles = random_twenty['title'].tolist()
+                movie_builder = []
+
+
+
+                for _, row in random_twenty.iterrows():
+
+                    poster_path = row.get("poster_path")
+                    if pd.isna(poster_path) or not poster_path:
+                        poster_path = f"https://{STORAGE_ACCOUNT}.blob.core.windows.net/{STORAGE_CONTAINER}/defaultimage"
+                    else:
+                        poster_path = f"{image_base_url}{poster_path}"
+
+                    movie_builder.append({
+                        "title": row.get("title", ""),
+                        "poster_path": poster_path,
+                        "vote_average": round(row.get("vote_average"), 1) if row.get("vote_average") is not None else "N/A",
+                        "release_date": row.get("release_date", ""),
+                        "runtime": row.get("runtime", "")
+                    })
                 # logging.info(f"Randomly selected 20 movies for {genre}: {random_twenty.to_dict(orient='records')}")
-                results[genre] = movie_titles
-                logging.info(f"Selected 20 movies for genre '{genre}': {movie_titles}")
+                results[genre] = movie_builder
+                logging.info(f"Selected 20 movies for genre '{genre}': {[movie['runtime'] for movie in movie_builder]}")
                 # results[genre] = random_twenty.to_dict(orient='records')
         except Exception as e:
             logging.error(f"Error accessing blob {blob_name}: {e}")

@@ -7,7 +7,7 @@
 <form method="POST" action="/liked-movies">
     {% for genre in genres %}
     <label>
-        <input type="checkbox" name="genres" value="{{ genre }}"> {{ genre|capitalize }}
+        <input type="checkbox" name="genres" value="{{ genre }}"> {{ genre| upper}}
     </label><br>
     {% endfor %}
     <br>

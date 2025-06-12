@@ -3,23 +3,52 @@
 {% block title %}Select Movies{% endblock %}
 
 {% block content %}
-<h1><b>Movie Recommendation Questionnaire</b></h1>
-<h3>Select movies you enjoy.</h3>
-<h4>Based on your favorite genres, these are some movies you may have seen.</h4>
+<h3><b>Select Movies You Enjoy</b></h3>
+<br>
+<h4>Based on your favorite genres, here are some movies you may have seen.</h4>
 
+
+<form method="post" action="/liked-movies">
+    {% for genre in selected_genres %}
+        <input type="hidden" name="genres" value="{{ genre }}">
+    {% endfor %}
+    <span>Not seeing anything familiar?</span>
+    <button type="submit" name="shuffle" value="true">Shuffle Suggestions</button>
+</form>
+<br>
+<br>
 <form method="post" action="/recommend-movies">
-    {% if movie_titles %}
-        {% for genre, titles in movie_titles.items() %}
+    {% if movie_data %}
+        {% for genre, movies in movie_data.items() %}
             <h3>Category: {{ genre|upper }}</h3>
-            {% for title in titles %}
-                <label>
-                    <input type="checkbox" name="movies" value="{{ title }}">
-                    {{ title }}
-                </label><br>
-            {% endfor %}
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4"">
+                {% for movie in movies %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            {% if movie.poster_path %}
+                                <img src="{{ movie.poster_path }}" class="card-img-top" style="width: 300px; height: 450px; object-fit: cover;" alt="{{ movie.title }}">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ movie.title }}</h5>
+                                <p class="card-text">
+                                    {{ movie.vote_average }} / 10 <br>
+                                    {{ movie.releae_date }} <br>
+                                    {{ movie.runtime }} min 
+                                </p>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input movie-checkbox" name="movies" value="{{ movie.title}}">
+                                    <label class="form-check-label">Select</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         {% endfor %}
         <br>
-    <button type="submit">Get Recommendations</button>
+        <button type="submit" class="btn btn-primary">Get Recommendations</button>
+    {% else %}
+        <p>No movies available for the selected genres.</p>
     {% endif %}
 </form>
 {% endblock %}
