@@ -1,32 +1,48 @@
 {% extends "base.html" %}
 {% block title %}Genre Selection{% endblock %}
 {% block content %}
+
+<!-- Optional: Style for cursor and dimming disabled checkboxes -->
+<style>
+    .form-check-input:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+</style>
+
 <h1><b>Recommendation Questionnaire</b></h1>
 <h3>Please select up to 5 of your favorite movie genres.</h3>
 <br>
 <form method="POST" action="/liked-movies">
-    {% for genre in genres %}
-    <label>
-        <input type="checkbox" name="genres" value="{{ genre }}"> {{ genre| upper}}
-    </label><br>
-    {% endfor %}
+    <div class="form-group">
+        {% for genre in genres %}
+        <div class="form-check">
+            <input class="form-check-input genre-checkbox " type="checkbox" name="genres" value="{{ genre }}">
+            <label class="form-check-label">
+                {{ genre|upper }}
+            </label>
+        </div>
+        {% endfor %}
+    </div>
     <br>
-    <button type="submit">Next</button>
+    <button type="submit" class="btn btn-primary">Next</button>
 </form>
-{% endblock %}
+
+<!-- JavaScript to limit checkbox selection to 5 -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        const maxChecked = 5;
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkboxes = document.querySelectorAll('.genre-checkbox');
 
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', () => {
-                const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
-                if (checkedCount > maxChecked) {
-                    checkbox.checked = false;
-                    alert(`You can only select up to ${maxChecked} genres.`);
-                }
+                const checkedCount = document.querySelectorAll('.genre-checkbox:checked').length;
+                checkboxes.forEach(cb => {
+                    if (!cb.checked) cb.disabled = checkedCount >= 5;
+                    else cb.disabled = false;
+                });
             });
         });
     });
 </script>
+
+{% endblock %}

@@ -49,7 +49,17 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
             if blob_client.exists():
                 blob_data = blob_client.download_blob().readall()
                 df = pd.read_csv(io.BytesIO(blob_data))
-                random_twenty = df.sample(n=min(20, len(df)), random_state=None)
+
+                # Filter for valid vote_average, release_date, and runtime >= 30
+                filtered_df = df[
+                    df['vote_average'].notna() &
+                    df['release_date'].notna() &
+                    df['runtime'].notna() &
+                    (df['runtime'] >= 30)
+                ]
+
+                # Sample up to 20 from the filtered DataFrame
+                random_twenty = filtered_df.sample(n=min(20, len(filtered_df)), random_state=None)
                 movie_builder = []
 
 
@@ -62,17 +72,21 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
                     else:
                         poster_path = f"{image_base_url}{poster_path}"
 
+                    vote_average = row.get("vote_average")
+                    if float(vote_average).is_integer():
+                        vote_average_formatted = int(vote_average)
+                    else:
+                        vote_average_formatted = round(float(vote_average), 1)
+
                     movie_builder.append({
                         "title": row.get("title", ""),
                         "poster_path": poster_path,
-                        "vote_average": round(row.get("vote_average"), 1) if row.get("vote_average") is not None else "N/A",
+                        "vote_average": vote_average_formatted,
                         "release_date": row.get("release_date", ""),
                         "runtime": row.get("runtime", "")
                     })
-                # logging.info(f"Randomly selected 20 movies for {genre}: {random_twenty.to_dict(orient='records')}")
                 results[genre] = movie_builder
-                logging.info(f"Selected 20 movies for genre '{genre}': {[movie['runtime'] for movie in movie_builder]}")
-                # results[genre] = random_twenty.to_dict(orient='records')
+                logging.info(f"Selected {len(movie_builder)} movies for genre '{genre}'")
         except Exception as e:
             logging.error(f"Error accessing blob {blob_name}: {e}")
 
