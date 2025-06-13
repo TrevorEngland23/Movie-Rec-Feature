@@ -49,17 +49,9 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
                 df = pd.read_csv(io.BytesIO(blob_data))
 
                 # Filter for valid vote_average, release_date, and runtime >= 30
-                filtered_df = df[
-                    df['title'].notna() &
-                    df['vote_average'].notna() &
-                    df['release_date'].notna() &
-                    df['runtime'].notna() &
-                    (df['runtime'] >= 30) &
-                    df['original_language'].isin(['en', 'es'])
-                ]
 
                 # Sample up to 20 from the filtered DataFrame
-                random_twenty = filtered_df.sample(n=min(20, len(filtered_df)), random_state=None)
+                random_twenty = df.sample(n=min(20, len(df)), random_state=None)
                 movie_builder = []
 
                 for _, row in random_twenty.iterrows():

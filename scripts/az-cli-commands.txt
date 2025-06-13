@@ -11,4 +11,3 @@ az storage blob upload-batch --account-name <storage_account_name> --destination
 
 # Generate SAS token
 az storage account generate-sas --account-name <storage_account_name> --permissions rl --expiry <expiration> --services b --resource-type o --https-only --output tsv
-se=2025-08-31T23%3A59%3A00Z&sp=rl&spr=https&sv=2022-11-02&ss=b&srt=o&sig=LQpE6r3i8l%2BG4YZFyCWNw8tmj/pjhbBaU/EbybMIYlo%3D
