@@ -49,9 +49,15 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
                 df = pd.read_csv(io.BytesIO(blob_data))
 
                 # Filter for valid vote_average, release_date, and runtime >= 30
+                filtered_df = df[
+                    df['title'].notna() &
+                    df['vote_average'].notna() &
+                    df['release_date'].notna() &
+                    df['runtime'].notna()
+                ]
 
                 # Sample up to 20 from the filtered DataFrame
-                random_twenty = df.sample(n=min(20, len(df)), random_state=None)
+                random_twenty = filtered_df.sample(n=min(20, len(filtered_df)), random_state=None)
                 movie_builder = []
 
                 for _, row in random_twenty.iterrows():
@@ -103,6 +109,7 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
     
     # account_url = "https://c964capstone1121312.blob.core.windows.net"
     azure_sas_token = os.getenv("AZURE_SAS_TOKEN")
+    image_base_url="https://image.tmdb.org/t/p/w300"
     # container_name = "tmdbfilteredgenres"
     blob_service_client = BlobServiceClient(account_url=f"https://{STORAGE_ACCOUNT}.blob.core.windows.net", credential=azure_sas_token)
     container_client = blob_service_client.get_container_client(STORAGE_CONTAINER)
@@ -140,11 +147,37 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
         all_movies_df['similarity'] = top_recommendations
         recs = all_movies_df[~all_movies_df['title'].isin(selected_movies)]
         new_top_recs = recs.sort_values(by='similarity', ascending=False).head(10)
+        rec_builder = []
 
+
+        for _,row in new_top_recs.iterrows():
+
+            poster_path = row.get("poster_path")
+            if pd.isna(poster_path) or not poster_path:
+                poster_path = f"https://{STORAGE_ACCOUNT}.blob.core.windows.net/{STORAGE_CONTAINER}/defaultimage"
+            else:
+                poster_path = f"{image_base_url}{poster_path}"
+
+            vote_average = row.get("vote_average")
+            if float(vote_average).is_integer():
+                vote_average_formatted = int(vote_average)
+            else:
+                vote_average_formatted = round(float(vote_average), 1)
+
+
+            rec_builder.append({
+                "title": row.get("title", ""),
+                "poster_path": poster_path,
+                "vote_average": vote_average_formatted,
+                "release_date": row.get("release_date", ""),
+                "runtime": row.get("runtime", ""),
+                "overview": row.get("overview", "No description available."),
+                "homepage": row.get("homepage", "")
+            })
         # Return top 10 recommended movie titles
-        rec_movie_titles = new_top_recs['title'].tolist()
-        print(rec_movie_titles)
-        return func.HttpResponse(json.dumps({"recommended_movies": rec_movie_titles}), status_code=200, mimetype="application/json")
+        rec_movies = rec_builder
+        print(rec_movies)
+        return func.HttpResponse(json.dumps({"recommended_movies": rec_movies}), status_code=200, mimetype="application/json")
     
     else:
         return func.HttpResponse(

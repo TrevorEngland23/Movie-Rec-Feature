@@ -1,34 +1,31 @@
 {% extends "base.html" %}
 {% block title %}Genre Selection{% endblock %}
+{% block header %}
+<link rel="stylesheet" href="../static/style.css">
+{% endblock %}
 {% block content %}
 
-<!-- Optional: Style for cursor and dimming disabled checkboxes -->
-<style>
-    .form-check-input:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-    }
-</style>
+<h1 class="mb-4"><b>Recommendation Questionnaire</b></h1>
+<h3 class="mb-3">Select up to 5 of your favorite movie genres</h3>
 
-<h1><b>Recommendation Questionnaire</b></h1>
-<h3>Please select up to 5 of your favorite movie genres.</h3>
-<br>
 <form method="POST" action="/liked-movies">
-    <div class="form-group">
+    <div class="row row-cols-2 row-cols-md-4 g-4">
         {% for genre in genres %}
-        <div class="form-check">
-            <input class="form-check-input genre-checkbox " type="checkbox" name="genres" value="{{ genre }}">
-            <label class="form-check-label">
-                {{ genre|upper }}
+        <div class="col">
+            <label class="card genre-card shadow-sm text-white" style="height: 180px; position: relative; background-size: cover; background-position: center;">
+                <input type="checkbox" name="genres" value="{{ genre }}" class="form-check-input genre-checkbox" style="position: absolute; top: 10px; right: 10px;">
+                <div class="card-body d-flex align-items-center justify-content-center" style="background: rgba(0, 0, 0, 0.4); height: 100%;">
+                    <h5 class="card-title text-center w-100"><b>{{ genre|upper }}</b></h5>
+                </div>
             </label>
         </div>
         {% endfor %}
     </div>
+
     <br>
     <button type="submit" class="btn btn-primary">Next</button>
 </form>
 
-<!-- JavaScript to limit checkbox selection to 5 -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const checkboxes = document.querySelectorAll('.genre-checkbox');
