@@ -13,4 +13,13 @@ The dataset for this application can be found [here](https://www.kaggle.com/data
 
 The dataset contains ~1 million entries, so I cleaned and filtered the dataset for my needs. This project is a Capstone project and the dataset contains raunchy material, so I attempted to filter out as much of that material as possible locally before deploying the data to the cloud.  
 
+### POC:  
+
+![screenshot]('screenshots/homepage.png')  
+![screenshot]('screenshots/genre_selection.png')  
+![screenshot]('screenshots/movie_selection.png')  
+
+#### Result of shuffling:  
+![screenshot]('screenshots/shuffle.png')
+
 ## This project is in development.
