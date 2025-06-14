@@ -31,31 +31,32 @@
         <br>
         <br>
             <h3>Category: {{ genre|upper }}</h3>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4"">
-                {% for movie in movies %}
-                    <div class="col">
-                        <div class="card h-100 text-center shadow-sm">
-                            {% if movie.poster_path %}
-                            <img src="{{ movie.poster_path }}" class="card-img-top img-fluid" style="object-fit: cover; aspect-ratio: 2/3; max-height: 300px;" alt="{{ movie.title }}"><br>
-
-                            {% endif %}
-                            <div class="card-body py-2">
-                            <h6 class="card-title mb-1"><b>{{ movie.title }}</b></h6>
-                            <p class="card-text small mb-1">
-                                ⭐️ {{ movie.vote_average }} / 10</p>
-                            <p class="card-text fs-6 mb-1">
-                                {{ movie.release_date[:4] }}<br>
-                                {{ movie.runtime }} min</p>
-                        
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input movie-checkbox" name="movies" value="{{ movie.title }}">
-                                <label class="form-check-label">Select</label>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                {% endfor %}
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
+    {% for movie in movies %}
+    <div class="col d-flex">
+        <label class="card genre-card shadow-sm text-white flex-fill"
+               style="background: #222; height: 370px; display: flex; flex-direction: column; justify-content: flex-start;">
+            {% if movie.poster_path %}
+            <img src="{{ movie.poster_path }}" 
+                 style="object-fit: cover; aspect-ratio: 2/3; max-height: 260px; width: 100%;">
+            {% endif %}
+            <div class="card-body py-2" style="background: rgba(0,0,0,0.7); flex: 1 1 auto;">
+                <h6 class="card-title mb-1 text-truncate" style="overflow: hidden;">
+                    <b>{{ movie.title }}</b>
+                </h6>
+                <p class="card-text small mb-1">⭐️ {{ movie.vote_average }} / 10</p>
+                <p class="card-text fs-6 mb-1">
+                    {{ movie.release_date[:4] }}<br>
+                    {{ movie.runtime }} min
+                </p>
+                <div class="form-check" style="position: absolute; top: 10px; right: 10px;">
+                    <input type="checkbox" class="form-check-input genre-checkbox" name="movies" value="{{ movie.title }}" style="transform: scale(1.8);">
+                </div>
             </div>
+        </label>
+    </div>
+    {% endfor %}
+</div>
         {% endfor %}
         <br>
         <button type="submit" class="btn btn-primary">Get Recommendations</button>
