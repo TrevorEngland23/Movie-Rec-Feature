@@ -15,11 +15,11 @@ The dataset contains ~1 million entries, so I cleaned and filtered the dataset f
 
 ### POC:  
 
-![screenshot]('screenshots/homepage.png')  
-![screenshot]('screenshots/genre_selection.png')  
-![screenshot]('screenshots/movie_selection.png')  
+![screenshot](screenshots/homepage.png)  
+![screenshot](screenshots/genre_selection.png)  
+![screenshot](screenshots/movie_selection.png)  
 
 #### Result of shuffling:  
-![screenshot]('screenshots/shuffle.png')
+![screenshot](screenshots/shuffle.png)
 
 ## This project is in development.
