@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, session
 import requests
 import pandas as pd
 import os
-from scripts.get_genres import get_genre_names
+from scripts.get_genres import get_genre_names_and_image
 
 app = Flask(__name__)
 app.secret_key = ""
@@ -10,10 +10,11 @@ app.secret_key = ""
 @app.route('/')
 def home():
     return render_template("home.html")
+
 @app.route('/movie-questionnaire')
 def index():
-    genres = get_genre_names()
-    return render_template("genre_selection.html", genres=genres)
+    genres_and_images = get_genre_names_and_image()
+    return render_template("genre_selection.html", genres=genres_and_images)
 
 # @app.route('/submit-genre', methods=['POST'])
 
