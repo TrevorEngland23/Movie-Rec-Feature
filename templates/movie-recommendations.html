@@ -3,25 +3,32 @@
 {% block title %}Movie Recommendations{% endblock %}
 
 {% block content %}
-{% if recommended_movies.recommended_movies %}
-    <h2>Recommended Movies</h2>
-    <ul>
+<h2 class="mb-4" style="text-align:center;">Recommended Movies</h2>
+{% if recommended_movies and recommended_movies.recommended_movies %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
         {% for movie in recommended_movies.recommended_movies %}
-            <div class="carousel-item">
-            <img src="..." alt="...">
-            <div class="carousel-caption d-none d-md-block">
-                <li>{{ movie['title'] }}</li>
-                <li>{{ movie['vote_average'] }}</li>
-                <li>{{ movie['release_date'] }}</li>
-                <li>{{ movie['runtime'] }}</li>
-                <li>{{ movie['overview'] }}</li>
-                <h5>...</h5>
-                <p>...</p>
+        <div class="col d-flex">
+            <div class="card genre-card shadow-sm text-white flex-fill"
+                 style="background: #222; height: 370px; display: flex; flex-direction: column; justify-content: flex-start;">
+                {% if movie.poster_path %}
+                <img src="{{ movie.poster_path }}" 
+                     style="object-fit: cover; aspect-ratio: 2/3; max-height: 260px; width: 100%;">
+                {% endif %}
+                <div class="card-body py-2" style="background: rgba(0,0,0,0.7); flex: 1 1 auto;">
+                    <h6 class="card-title mb-1 text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <b>{{ movie.title }}</b>
+                    </h6>
+                    <p class="card-text small mb-1">⭐️ {{ movie.vote_average }} / 10</p>
+                    <p class="card-text fs-6 mb-1">
+                        {{ movie.release_date[:4] if movie.release_date }}<br>
+                        {{ movie.runtime }} min
+                    </p>
+                </div>
             </div>
         </div>
-     
-
         {% endfor %}
-    </ul>
+    </div>
+{% else %}
+    <p style="text-align: center">No recommendations found.</p>
 {% endif %}
 {% endblock %}

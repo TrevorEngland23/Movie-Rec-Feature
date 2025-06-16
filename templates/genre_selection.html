@@ -6,7 +6,7 @@
 {% block content %}
 
 <h1 class="mb-4" style="text-align:center;"><b>Recommendation Questionnaire</b></h1>
-<h3 class="mb-3" style="text-align:center;">Select up to 5 of your favorite movie genres</h3>
+<h3 class="mb-3" style="text-align:center;">Select up to 5 of your favorite movie genres</h3><br>
 
 <form method="POST" action="/liked-movies">
     <div class="row row-cols-2 row-cols-md-3 g-4">
@@ -25,22 +25,28 @@
     </div>
 
     <br>
-    <button type="submit" class="btn btn-primary">Next</button>
+    <button type="submit" class="btn btn-primary" id="next-button" disabled>Next</button>
 </form>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const checkboxes = document.querySelectorAll('.genre-checkbox');
+        const nextButton = document.getElementById('next-button');
+
+        function updateState() {
+            const checkedCount = document.querySelectorAll('.genre-checkbox:checked').length;
+            nextButton.disabled = checkedCount === 0;
+            checkboxes.forEach(cb => {
+                if (!cb.checked) cb.disabled = checkedCount >= 5;
+                else cb.disabled = false;
+            });
+        }
 
         checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                const checkedCount = document.querySelectorAll('.genre-checkbox:checked').length;
-                checkboxes.forEach(cb => {
-                    if (!cb.checked) cb.disabled = checkedCount >= 5;
-                    else cb.disabled = false;
-                });
-            });
+            checkbox.addEventListener('change', updateState);
         });
+
+        updateState()
     });
 </script>
 
