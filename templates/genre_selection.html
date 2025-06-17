@@ -6,7 +6,7 @@
 {% block content %}
 
 <h1 class="mb-4" style="text-align:center;"><b>Recommendation Questionnaire</b></h1>
-<h3 class="mb-3" style="text-align:center;">Select up to 5 of your favorite movie genres</h3><br>
+<h3 class="mb-3" style="text-align:center;">Select up to 3 of your favorite movie genres</h3><br>
 
 <form method="POST" action="/liked-movies">
     <div class="row row-cols-2 row-cols-md-3 g-4">
@@ -32,12 +32,13 @@
     document.addEventListener("DOMContentLoaded", function () {
         const checkboxes = document.querySelectorAll('.genre-checkbox');
         const nextButton = document.getElementById('next-button');
+        const maxNumGenres = 3;
 
         function updateState() {
             const checkedCount = document.querySelectorAll('.genre-checkbox:checked').length;
             nextButton.disabled = checkedCount === 0;
             checkboxes.forEach(cb => {
-                if (!cb.checked) cb.disabled = checkedCount >= 5;
+                if (!cb.checked) cb.disabled = checkedCount >= maxNumGenres;
                 else cb.disabled = false;
             });
         }

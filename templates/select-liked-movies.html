@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="../static/style.css">
 {% endblock %}
 {% block content %}
-<h3 id="select-movie-title"><b>Select Films You Enjoy</b></h3>
+<h3 id="select-movie-title"><b>Select Up To 10 Films You Enjoy</b></h3>
 <h4 id="description-select-movie">Based on your favorite genres, here are some movies you may have seen.</h4>
 <br>
 
@@ -58,26 +58,34 @@
 </div>
         {% endfor %}
         <br>
-        <button type="submit" class="btn btn-primary">Get Recommendations</button>
+        <button type="submit" class="btn btn-primary" id="get-recs-btn" disabled>Get Recommendations</button>
     {% else %}
         <p style="text-align: center">No movies available for the selected genres.</p>
     {% endif %}
 </form>
-{% endblock %}
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        const maxChecked = 20;
+        const checkboxes = document.querySelectorAll('.genre-checkbox');
+        const getRecsBtn = document.getElementById('get-recs-btn')
+        const maxChecked = 10;
+
+        function updateState() {
+            const checkedCount = document.querySelectorAll('.genre-checkbox:checked').length;
+            getRecsBtn.disabled = checkedCount === 0;
+            checkboxes.forEach(cb => {
+                if (!cb.checked) cb.disabled = checkedCount >= maxChecked;
+                else cb.disabled = false;
+            });
+        }
 
         checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                const checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
-                if (checkedCount > maxChecked) {
-                    checkbox.checked = false;
-                    alert("You can only select up to ${maxChecked} genres.");
-                }
-            });
+            checkbox.addEventListener('change', updateState);
         });
+
+        updateState();
     });
 </script>
+
+{% endblock %}
+

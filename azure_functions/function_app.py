@@ -57,7 +57,7 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
                 ]
 
                 # Sample up to 20 from the filtered DataFrame
-                random_twenty = filtered_df.sample(n=min(20, len(filtered_df)), random_state=None)
+                random_twenty = filtered_df.sample(n=min(15, len(filtered_df)), random_state=None)
                 movie_builder = []
 
                 for _, row in random_twenty.iterrows():

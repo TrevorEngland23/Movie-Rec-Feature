@@ -5,7 +5,7 @@ import os
 from scripts.get_genres import get_genre_names_and_image
 
 app = Flask(__name__)
-app.secret_key = ""
+app.secret_key = "123abc"
 
 @app.route('/')
 def home():
