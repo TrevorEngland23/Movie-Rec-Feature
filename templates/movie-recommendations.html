@@ -18,17 +18,43 @@
                     <h6 class="card-title mb-1 text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         <b>{{ movie.title }}</b>
                     </h6>
-                    <p class="card-text small mb-1">⭐️ {{ movie.vote_average }} / 10</p>
-                    <p class="card-text fs-6 mb-1">
-                        {{ movie.release_date[:4] if movie.release_date }}<br>
-                        {{ movie.runtime }} min
-                    </p>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div>
+                            <small>{{ movie.release_date[:4] }}</small><br>
+                            <small>{{ movie.runtime }} min</small>
+                        </div>
+                    <button type="button" class="btn btn-outline-light btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#modal-{{ movie.id }}">
+                        More Info
+                    </button>
+                </div>
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="modal-{{ movie.id }}" tabindex="-1" aria-labelledby="modalLabel-{{ movie.id }}" aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content text-dark">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel-{{ movie.id }}">{{ movie.title }} ({{ movie.release_date[:4] }})</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body d-flex flex-column flex-md-row">
+                    <img src="{{ movie.poster_path }}" class="img-fluid mb-3 mb-md-0 me-md-3" style="max-height: 400px; object-fit: cover;" alt="{{ movie.title }}">
+                    <div>
+                      <p><strong>Rating:</strong> ⭐️ {{ movie.vote_average }} / 10</p>
+                      <p><strong>Genres:</strong> {{ movie.genre }}</p>
+                      <p><strong>Runtime:</strong> {{ movie.runtime }} minutes</p>
+                      <p><strong>Description:</strong> {{ movie.overview }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
         {% endfor %}
     </div>
 {% else %}
     <p style="text-align: center">No recommendations found.</p>
 {% endif %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}
+

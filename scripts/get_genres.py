@@ -38,9 +38,10 @@ def get_genre_names_and_image():
             if blob_client.exists():
                 blob_data = blob_client.download_blob().readall()
                 df = pd.read_csv(io.BytesIO(blob_data))
-                if not df.empty:
-                    genre_poster_path = df.iloc[0].get("poster_path")
-                    genre_images[genre] = genre_poster_path
+                relevant_df = df[df['backdrop_path'].notnull() & df['backdrop_path'].str.strip().ne("")]
+                if not relevant_df.empty:
+                    backdrop_path = relevant_df.iloc[1].get("backdrop_path")
+                    genre_images[genre] = backdrop_path
                     
         except Exception as e:
             print(f"No data found in {genre}.csv")
