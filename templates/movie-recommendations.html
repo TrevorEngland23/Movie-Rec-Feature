@@ -4,9 +4,9 @@
 
 {% block content %}
 <h2 class="mb-4" style="text-align:center;">Recommended Movies</h2>
-{% if recommended_movies and recommended_movies.recommended_movies %}
+{% if recommended_movies %}
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
-        {% for movie in recommended_movies.recommended_movies %}
+        {% for movie in recommended_movies %}
         <div class="col d-flex">
             <div class="card genre-card shadow-sm text-white flex-fill"
                  style="background: #222; height: 370px; display: flex; flex-direction: column; justify-content: flex-start;">
@@ -52,6 +52,19 @@
             </div>
         {% endfor %}
     </div>
+
+    <hr>
+    <h3 class="mt-4">Visual Insights</h3>
+
+    <h5>1. Movies by Genre</h5>
+    <img src="data:image/png;base64,{{ genre_bar_chart }}" alt="Genre Bar Chart" class="img-fluid mb-4">
+
+    <h5>2. Selected Genres as % of Database</h5>
+    <img src="data:image/png;base64,{{ genre_pie_chart }}" alt="Genre Pie Chart" class="img-fluid mb-4">
+
+    <h5>3. Cosine Similarity of Recommended Movies</h5>
+    <img src="data:image/png;base64,{{ cosine_similarity_chart }}" alt="Cosine Similarity" class="img-fluid mb-4">
+
 {% else %}
     <p style="text-align: center">No recommendations found.</p>
 {% endif %}
