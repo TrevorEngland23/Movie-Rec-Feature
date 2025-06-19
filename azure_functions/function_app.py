@@ -1,5 +1,9 @@
 import azure.functions as func
-import datetime
+import seaborn as sns
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use('Agg')
+import base64
 import json
 import logging
 from azure.storage.blob import BlobServiceClient
@@ -125,9 +129,38 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
         if not all_movies:
             return func.HttpResponse(f"No datasets found at {STORAGE_BASE_URL}/{STORAGE_CONTAINER}.", status_code=404)
         all_movies_df = pd.concat(all_movies, ignore_index=True).drop_duplicates(subset=['title'])
-    
+
+        genre_counts = all_movies_df['genres'].str.split(',').explode().str.strip().value_counts()
+
+        plt.figure(figsize=(10, 5))
+        sns.barplot(x=genre_counts.index, y=genre_counts.values, palette='mako')
+        plt.xticks(rotation=45)
+        plt.title('Number of Movies per Genre')
+        plt.ylabel('Movie count')
+        plt.xlabel('Genre')
+
+        total_movies = genre_counts.sum()
+        plt.text(
+            0.95, 0.95, f"Total movies: {total_movies}", 
+            horizontalalignment='right',
+            verticalalignment='top',
+            transform=plt.gca().transAxes,
+            fontsize=10, color='gray'
+        )
+
+        buf1 = io.BytesIO()
+        plt.tight_layout()
+        plt.savefig(buf1, format='png')
+        buf1.seek(0)
+        genre_bar_chart = base64.b64encode(buf1.read()).decode('utf-8')
+        plt.close()
+
+
+
         # Use genres and keywords to create a features column (customize this)
-        all_movies_df['features'] = all_movies_df['genres'].fillna('') + ' ' + all_movies_df['keywords'].fillna('')
+        all_movies_df['id'] = all_movies_df['id'].astype(str)
+        selected_movies = [str(mid) for mid in selected_movies]
+        all_movies_df['features'] = all_movies_df['genres'].fillna('') * 3 + ' ' + all_movies_df['keywords'].fillna('') * 3 + all_movies_df['title'].fillna('') + ' ' + all_movies_df['overview'].fillna('')
 
         # Vectorize the features
         tfidf_vectorizer = TfidfVectorizer(stop_words='english')
@@ -135,6 +168,27 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
 
         # Indicies of selected movies
         selected_indicies = all_movies_df[all_movies_df['title'].isin(selected_movies)].index.tolist()
+
+        selected_genres = all_movies_df.loc[selected_indicies]['genres'].dropna().str.split(',').explode().str.strip()
+        all_genres = all_movies_df['genres'].dropna().str.split(',').explode().str.strip()
+
+        genre_pie_df = selected_genres.value_counts().head(3)
+        total_genres_count = all_genres.value_counts()
+
+        pie_labels = genre_pie_df.index.tolist()
+        pie_sizes = [(total_genres_count.get(g, 0) / len(all_movies_df)) * 100 for g in     pie_labels]
+
+        plt.figure(figsize=(6, 6))
+        plt.pie(pie_sizes, labels=pie_labels, autopct='%1.1f%%', startangle=140)
+        plt.title("Selected Genres as % of Total Database")
+
+        buf2 = io.BytesIO()
+        plt.tight_layout()
+        plt.savefig(buf2, format='png')
+        buf2.seek(0)
+        genre_pie_chart = base64.b64encode(buf2.read()).decode('utf-8')
+        plt.close()
+
         if not selected_indicies:
             return func.HttpResponse("Selected movies not found in the dataset.", status_code=404)
         
@@ -148,11 +202,28 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
         recs = all_movies_df[~all_movies_df['title'].isin(selected_movies)]
         top_20_matches = recs.sort_values(by='similarity', ascending=False).head(20)
         # new_top_recs = recs.sort_values(by='similarity', ascending=False).head(10)
+        cosine_scores = top_20_matches['similarity'].values
+
+        plt.figure(figsize=(8, 4))
+        plt.plot(range(1, len(cosine_scores)+1), cosine_scores, marker='o', linestyle='-', color='purple')
+        plt.title("Cosine Similarity of Recommended Movies")
+        plt.xlabel("Recommendation Rank")
+        plt.ylabel("Similarity Score")
+
+        buf3 = io.BytesIO()
+        plt.tight_layout()
+        plt.savefig(buf3, format='png')
+        buf3.seek(0)
+        cosine_chart = base64.b64encode(buf3.read()).decode('utf-8')
+        plt.close()
+
+
+
         rec_builder = []
         movie_count = 0
 
         for _,row in top_20_matches.iterrows():
-
+            movie_id = row.get("id")
             title = row.get("title")
             poster_path = row.get("poster_path")
             vote_average = row.get("vote_average")
@@ -185,6 +256,7 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
 
 
             rec_builder.append({
+                "id": movie_id,
                 "title": title,
                 "poster_path": poster_path,
                 "vote_average": vote_average_formatted,
@@ -201,7 +273,7 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
         # Return top 10 recommended movie titles
         rec_movies = rec_builder
         print(rec_movies)
-        return func.HttpResponse(json.dumps({"recommended_movies": rec_movies}), status_code=200, mimetype="application/json")
+        return func.HttpResponse(json.dumps({"recommended_movies": rec_movies, "genre_bar_chart": genre_bar_chart, "genre_pie_chart": genre_pie_chart, "cosine_similarity_chart": cosine_chart}), status_code=200, mimetype="application/json")
     
     else:
         return func.HttpResponse(
