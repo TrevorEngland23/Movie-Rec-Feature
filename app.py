@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import os
 from scripts.get_genres import get_genre_names_and_image
+import json
 
 app = Flask(__name__)
 app.secret_key = ""
@@ -50,25 +51,48 @@ def select_movies():
 
 @app.route('/recommend-movies', methods=['GET', 'POST'])
 def movie_recommendations():
+    azure_function_url_two = 'http://localhost:7071/api/HttpTriggerMovieRecs'
+    headers = {'Content-Type': 'application/json'}
+
     if request.method == 'POST':
         selected_movies = request.form.getlist('movies')
+        print(f"Selected movies ID: {selected_movies}")
         session['selected_movies'] = selected_movies
-        print(f"Selected movies: {selected_movies}")
-        azure_function_url_two = "http://localhost:7071/api/HttpTriggerMovieRecs"
+    else:
+       selected_movies = session.get('selected_movies', [])
+    
+
+    recommended_movies = {}
+    genre_bar_chart = None
+    genre_pie_chart = None
+    cosine_similarity_chart = None
+
+    if selected_movies:
         payload = {"movies": selected_movies}
-        headers = {'Content-Type': 'application/json'}
-        response = requests.post(azure_function_url_two, json=payload, headers=headers)
-        recommended_movies = {}
-        if response.status_code == 200:
-            recommended_movies = response.json()
-            print(f"Selected movies sent successfully to Azure Function {azure_function_url_two}.")
-        
-        else:
-            print(f"Failed to send selected movies. Status code: {response.status_code}")
-            # Update this to handle multiple values for movie recommendation
-        return render_template("movie-recommendations.html", recommended_movies=recommended_movies, selected_movies=selected_movies)
-    selected_movies = session.get('selected_movies', [])
-    return render_template("movie-recommendations.html", selected_movies=selected_movies)
+        try:
+            response = requests.post(azure_function_url_two, json=payload, headers=headers)
+            if response.status_code == 200:
+                json_response = response.json()
+                recommended_movies = json_response.get("recommended_movies", [])
+                print(f"recommended movies: {recommended_movies}")
+                genre_bar_chart = json_response.get("genre_bar_chart")
+                genre_pie_chart = json_response.get("genre_pie_chart")
+                cosine_similarity_chart = json_response.get("cosine_similarity_chart")
+                print(f"Successfully re-triggered Azure Function")
+            else:
+                print(f"Azure Function failed with status {response.status_code}")
+        except Exception as e:
+            print(f"Error calling Azure Function: {e}")
+
+    return render_template(
+        "movie-recommendations.html",
+        recommended_movies=recommended_movies,
+        selected_movies=selected_movies,
+        genre_bar_chart=genre_bar_chart,
+        genre_pie_chart=genre_pie_chart,
+        cosine_similarity_chart=cosine_similarity_chart
+    )
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5050)
