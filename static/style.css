@@ -63,4 +63,9 @@ body {
     cursor: pointer;
 }
 
+  .modal-content {
+    background-color: rgb(197, 194, 194) !important;  /* light grey, you can adjust */
+    color: #212529; /* dark text for readability */
+  }
+
 
