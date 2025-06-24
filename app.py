@@ -23,6 +23,7 @@ def index():
 def select_movies():
     if request.method == 'POST':
         selected_genres = request.form.getlist('genres')
+        # print(f"Selected Genres from user: {selected_genres}")
         session['selected_genres'] = selected_genres
 
         azure_function_url = "http://localhost:7071/api/HttpTriggerGGSM"
@@ -34,10 +35,9 @@ def select_movies():
         if response.status_code == 200:
             movie_data = response.json()
             session['movie_data'] = movie_data
-            # print(movie_data['action'][0].get('title', 'No title found'))
-            # print(movie_data)
             print("Genres sent successfully to Azure Function.")
-            print("Genres being reshuffled:", selected_genres)
+            if request.form.get("shuffle") == "true":
+                print("Genres being reshuffled:", selected_genres)
 
         
         else:
@@ -53,10 +53,12 @@ def select_movies():
 def movie_recommendations():
     azure_function_url_two = 'http://localhost:7071/api/HttpTriggerMovieRecs'
     headers = {'Content-Type': 'application/json'}
+    selected_genres = session.get('selected_genres', [])
 
     if request.method == 'POST':
         selected_movies = request.form.getlist('movies')
-        print(f"Selected movies ID: {selected_movies}")
+        
+        print(f"Selected movies: {selected_movies}")
         session['selected_movies'] = selected_movies
     else:
        selected_movies = session.get('selected_movies', [])
@@ -68,7 +70,8 @@ def movie_recommendations():
     cosine_similarity_chart = None
 
     if selected_movies:
-        payload = {"movies": selected_movies}
+        payload = {"movies": selected_movies, "genres": selected_genres}
+        print(f"PAYLOAD: {payload}")
         try:
             response = requests.post(azure_function_url_two, json=payload, headers=headers)
             if response.status_code == 200:
