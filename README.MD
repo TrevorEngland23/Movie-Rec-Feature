@@ -15,11 +15,30 @@ The dataset contains ~1 million entries, so I cleaned and filtered the dataset f
 
 ### POC:  
 
+#### This serves as the existing platform (Imagine something like netflix... but XBC)  
 ![screenshot](screenshots/homepage.png)  
+
+#### Select your top three favorite genres  
 ![screenshot](screenshots/genre_selection.png)  
+
+#### You're presented with 15 choices per genre you chose. Select up to 10 total movies  
 ![screenshot](screenshots/movie_selection.png)  
+![screenshot](screenshots/movie_selection2.png)  
+![screenshots](screenshots/movie_selection3.png)  
 
 #### Result of shuffling:  
 ![screenshot](screenshots/shuffle.png)
+
+#### Get your movie recommendations from XBC  
+![screenshots](screenshots/movie_recommendations.png)  
+
+#### Click the "More Info" button to read movie descriptions  
+![screenshots](screenshots/more_info.png)  
+
+#### Gain insight into how the recommendations were made + visualizations  
+![screenshots](screenshots/insights.png)  
+![screenshots](screenshots/insights2.png)  
+
+
 
 ## This project is in development.
