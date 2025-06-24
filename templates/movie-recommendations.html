@@ -3,7 +3,7 @@
 {% block title %}Movie Recommendations{% endblock %}
 
 {% block content %}
-<h2 class="mb-4" style="text-align:center;">Recommended Movies</h2>
+<h2 class="mb-4" style="text-align:center;">Your Recommended Movies</h2>
 {% if recommended_movies %}
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
         {% for movie in recommended_movies %}
@@ -54,15 +54,29 @@
     </div>
 
     <hr>
+    <br>
+    <h4>How did we determine this?</h4>
+    <br>
+
+    <p>We analyzed the genres and features of the movies you like and comopared them with the thousands of other films in our catalog. Here's how your recommendations were determined:</p>
+    <ol>
+        <li>We recieved your feedback for the genres you enjoy most.</li>
+        <li>We randomly selected 15 movies that belong to each genre from our catalog.</li>
+        <li>We compared metadata from your selected movies to other movies in our catalog using <em>cosine similarity</em>.</li>
+        <li>We picked movies with similar metadata to the movies you've previously liked.</li>
+    </ol>
+    <p>Below you can find a visual representation.</p>
+    <hr>
+    <br>
     <h3 class="mt-4">Visual Insights</h3>
 
-    <h5>1. Movies by Genre</h5>
+    <h5>1. Number of Movies by Genre</h5>
     <img src="data:image/png;base64,{{ genre_bar_chart }}" alt="Genre Bar Chart" class="img-fluid mb-4">
 
-    <h5>2. Selected Genres as % of Database</h5>
+    <h5>2. Genre % of Your Liked Movies</h5>
     <img src="data:image/png;base64,{{ genre_pie_chart }}" alt="Genre Pie Chart" class="img-fluid mb-4">
 
-    <h5>3. Cosine Similarity of Recommended Movies</h5>
+    <h5>3. Cosine Similarity Scores For Recommended Movies vs Liked Movies</h5>
     <img src="data:image/png;base64,{{ cosine_similarity_chart }}" alt="Cosine Similarity" class="img-fluid mb-4">
 
 {% else %}

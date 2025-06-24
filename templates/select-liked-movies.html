@@ -28,8 +28,9 @@
     {% if movie_data %}
         {% for genre, movies in movie_data.items() %}
         <br>
-        <br>
+        <hr>
             <h3>Category: {{ genre|upper }}</h3>
+            
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
     {% for movie in movies %}
     <div class="col d-flex">
