@@ -39,6 +39,3 @@ The dataset contains ~1 million entries, so I cleaned and filtered the dataset f
 ![screenshot](screenshots/insights.png)  
 ![screenshot](screenshots/insights2.png)  
 
-
-
-## This project is in development.
