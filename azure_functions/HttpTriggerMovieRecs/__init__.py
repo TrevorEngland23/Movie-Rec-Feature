@@ -19,7 +19,7 @@ app = func.FunctionApp()
 @app.function_name(name="HttpTriggerMovieRecs")
 @app.route(route="HttpTriggerMovieRecs", auth_level=func.AuthLevel.ANONYMOUS)
 
-def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
     storage_account = os.getenv('STORAGE_ACCOUNT')

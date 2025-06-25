@@ -12,11 +12,11 @@ app = func.FunctionApp()
 @app.function_name(name="HttpTriggerGGSM")
 @app.route(route="HttpTriggerGGSM", auth_level=func.AuthLevel.ANONYMOUS)
 
-def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
+def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
     storage_account = os.getenv('STORAGE_ACCOUNT')
-    print(storage_account)
+    logging.info(f"Storage account from env: {storage_account}")
     storage_container = os.getenv('STORAGE_CONTAINER')
     storage_base_url = f"https://{storage_account}.blob.core.windows.net"
     credential = DefaultAzureCredential()
