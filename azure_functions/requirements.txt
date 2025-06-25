@@ -2,4 +2,10 @@
 # The Python Worker is managed by the Azure Functions platform
 # Manually managing azure-functions-worker may cause unexpected issues
 
-azure-functions
+azure-functions==1.11.0
+azure-storage-blob
+pandas
+scikit-learn
+matplotlib
+seaborn
+azure-identity==1.23.0

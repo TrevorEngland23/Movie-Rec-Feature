@@ -1,9 +1,6 @@
 from flask import Flask, render_template, request, session
 import requests
-import pandas as pd
-import os
 from scripts.get_genres import get_genre_names_and_image
-import json
 
 app = Flask(__name__)
 app.secret_key = ""

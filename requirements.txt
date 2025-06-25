@@ -7,3 +7,4 @@ azure-storage-blob==12.16.0
 scikit-learn==1.6.1
 matplotlib==3.9.4
 seaborn==0.13.2
+azure-identity==1.23.0
