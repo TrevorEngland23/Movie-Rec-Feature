@@ -5,7 +5,7 @@ This repository contains two main projects:
 - **Azure-Functions**: Backend Azure Functions app  
 - **XBC-Recommendation-Engine**: Flask front-end application  
 
-This project is a 2 layer application that takes advantage of microservices. Both project directories have a Dockerfile that was used to create an image of the respective project. The Azure Functions were deployed to the cloud on Elastic Premium tier, hosted on Linux OS, Python v10.  The XBC-Recommendation-Engine component was hosted in Azure Container Instances.  The following better represents how things are working together.  
+This project is a 3 layer application that takes advantage of microservices. Both project directories have a Dockerfile that was used to create an image of the respective project. The Azure Functions were deployed to the cloud on Elastic Premium tier, hosted on Linux OS, Python v10.  The XBC-Recommendation-Engine component was hosted in Azure Container Instances.  The following better represents how things are working together.  
 
 ![screenshot](/XBC-Recommendation-Engine/screenshots/movie-rec-diagram.drawio.png)  
 
