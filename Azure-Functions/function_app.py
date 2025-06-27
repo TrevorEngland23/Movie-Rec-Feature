@@ -112,7 +112,6 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
     if not selected_movies:
         return func.HttpResponse("No movies received from request body. Pass movies in request body as JSON.", status_code=400)
     
-    azure_sas_token = os.getenv("AZURE_SAS_TOKEN")
     image_base_url="https://image.tmdb.org/t/p/w300"
     blob_service_client = BlobServiceClient(account_url=f"https://{storage_account}.blob.core.windows.net", credential=credential)
     container_client = blob_service_client.get_container_client(storage_container)
@@ -235,7 +234,7 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
                 else:
                     poster_path = f"{image_base_url}{poster_path}"
             except:
-                "No default image was found in the storage account."
+                logging.warning("No default image was found in the storage account.")
 
             
             try:
@@ -244,7 +243,7 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
                 else:
                     vote_average_formatted = round(float(vote_average), 1)
             except:
-                "'vote_average' is not of type float, int, or na"
+                logging.warning("'vote_average' is not of type float, int, or na")
 
 
             rec_builder.append({
