@@ -1,5 +1,0 @@
-The dataset I used can be found here:
-
-https://www.kaggle.com/datasets/asaniczka/tmdb-movies-dataset-2023-930k-movies
-
-The file is too large to send in Git.

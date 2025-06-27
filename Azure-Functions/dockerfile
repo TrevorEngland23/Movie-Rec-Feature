@@ -1,0 +1,11 @@
+FROM mcr.microsoft.com/azure-functions/python:4-python3.10
+
+# Copy your requirements and install them
+COPY requirements.txt /
+RUN pip install --no-cache-dir -r /requirements.txt
+
+# Copy all your function app code to /home/site/wwwroot
+COPY . /home/site/wwwroot
+
+# Set working directory
+WORKDIR /home/site/wwwroot

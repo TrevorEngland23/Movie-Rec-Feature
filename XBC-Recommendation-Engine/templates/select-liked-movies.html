@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Select Movies{% endblock %}
+{% block header %}
+    <link rel="stylesheet" href="../static/style.css">
+{% endblock %}
+{% block content %}
+<h3 id="select-movie-title"><b>Select Up To 10 Films You Enjoy</b></h3>
+<h4 id="description-select-movie">Based on your favorite genres, here are some movies you may have seen.</h4>
+<br>
+
+<form method="post" action="/liked-movies">
+    {% for genre in selected_genres %}
+        <input type="hidden" name="genres" value="{{ genre }}">
+    {% endfor %}
+    <span id="shuffle-suggestions">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" style="vertical-align: middle; margin-right:5px;" fill="dark-gray" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+</svg>Not seeing anything familiar?
+        <button type="submit" name="shuffle" value="true" id="shuffle-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16" style="vertical-align: middle; margin-right: 6px;">
+  <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
+  <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
+</svg>Shuffle Suggestions</button>
+    </span>
+</form>
+<form method="post" action="/recommend-movies">
+    {% if movie_data %}
+        {% for genre, movies in movie_data.items() %}
+        <br>
+        <hr>
+            <h3>Category: {{ genre|upper }}</h3>
+            
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
+    {% for movie in movies %}
+    <div class="col d-flex">
+        <label class="card genre-card shadow-sm text-white flex-fill"
+               style="background: #222; height: 370px; display: flex; flex-direction: column; justify-content: flex-start;">
+            {% if movie.poster_path %}
+            <img src="{{ movie.poster_path }}" 
+                 style="object-fit: cover; aspect-ratio: 2/3; max-height: 260px; width: 100%;">
+            {% endif %}
+            <div class="card-body py-2" style="background: rgba(0,0,0,0.7); flex: 1 1 auto;">
+                <h6 class="card-title mb-1 text-truncate" style="overflow: hidden;">
+                    <b>{{ movie.title }}</b>
+                </h6>
+                <p class="card-text small mb-1">⭐️ {{ movie.vote_average }} / 10</p>
+                <p class="card-text fs-6 mb-1">
+                    {{ movie.release_date[:4] }}<br>
+                    {{ movie.runtime }} min
+                </p>
+                <div class="form-check" style="position: absolute; top: 10px; right: 10px;">
+                    <input type="checkbox" class="form-check-input genre-checkbox" name="movies" value="{{ movie.title }}" style="transform: scale(1.8);">
+                </div>
+            </div>
+        </label>
+    </div>
+    {% endfor %}
+</div>
+        {% endfor %}
+        <br>
+        <button type="submit" class="btn btn-primary" id="get-recs-btn" disabled>Get Recommendations</button>
+    {% else %}
+        <p style="text-align: center">No movies available for the selected genres.</p>
+    {% endif %}
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.genre-checkbox');
+        const getRecsBtn = document.getElementById('get-recs-btn')
+        const maxChecked = 10;
+
+        function updateState() {
+            const checkedCount = document.querySelectorAll('.genre-checkbox:checked').length;
+            getRecsBtn.disabled = checkedCount === 0;
+            checkboxes.forEach(cb => {
+                if (!cb.checked) cb.disabled = checkedCount >= maxChecked;
+                else cb.disabled = false;
+            });
+        }
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateState);
+        });
+
+        updateState();
+    });
+</script>
+
+{% endblock %}
+

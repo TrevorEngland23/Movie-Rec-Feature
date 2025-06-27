@@ -1,0 +1,23 @@
+# Use a lightweight official Python base image
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies (if needed, adjust as per your actual packages)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code (excluding folders in .dockerignore)
+COPY . .
+
+# Expose app port (adjust if your app uses another)
+EXPOSE 5000
+
+# Run the Flask app (adjust if using uvicorn, FastAPI, etc.)
+CMD ["python", "app.py"]
