@@ -28,6 +28,9 @@ If you don't like the options you're given, reshuffle the options to get new mov
 Let the recommendation engine suggest 10 movies that you may like.  
 ![screenshot](/XBC-Recommendation-Engine/screenshots/movie_recommendations.png)  
 
+Click 'More Info' to read a movie description and get more information.  
+![screenshot](/XBC-Recommendation-Engine/screenshots/more_info.png)
+
 To maintain tranpsarency with the customer, XBC wants to reassure their users of how these decisions were made. The engine uses content-based filtering with cosine similarity, taking the movies the user picked and comparing them against other movies in the film library on certain features.  The highest cosine similarity scores are recommended.  
 ![screenshot](/XBC-Recommendation-Engine/screenshots/insights.png)  
 ![screenshot](/XBC-Recommendation-Engine/screenshots/insights2.png)  
