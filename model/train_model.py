@@ -17,11 +17,11 @@ container_client = blob_service_client.get_container_client(storage_container)
 blob = "TMDB_original_movie_dataset_v11.csv"
 blob_client = container_client.get_blob_client(blob)
 
-all_movies = []
+all_movies_df = []
 if blob_client.exists():
     blob_data = blob_client.download_blob().readall()
     df = pd.read_csv(io.BytesIO(blob_data))
-    all_movies_df = [df]
+    all_movies_df.append(df)
 else:
     all_movies_df = []
 
