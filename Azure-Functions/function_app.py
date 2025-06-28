@@ -7,6 +7,7 @@ matplotlib.use('Agg')
 import base64
 import json
 import logging
+import joblib
 from azure.storage.blob import BlobServiceClient
 import os
 import pandas as pd
@@ -20,11 +21,11 @@ credential = DefaultAzureCredential()
 storage_account = os.getenv("STORAGE_ACCOUNT")
 storage_container = os.getenv("STORAGE_CONTAINER")
 storage_base_url = f"https://{storage_account}.blob.core.windows.net"
+default_sas = os.getenv('SAS_TOKEN')
 
 @app.route(route="HttpTriggerGGSM", auth_level=func.AuthLevel.ANONYMOUS)
 def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
-
 
     genres = None
     
@@ -39,8 +40,6 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
         
     blob_service_client = BlobServiceClient(account_url=storage_base_url, credential=credential)
     container_client = blob_service_client.get_container_client(storage_container)
-    # find relevant datasets for each genre passed in the request
-    # relevant_datasets = []
 
     image_base_url="https://image.tmdb.org/t/p/w300"
     results = {}
@@ -52,7 +51,7 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
                 blob_data = blob_client.download_blob().readall()
                 df = pd.read_csv(io.BytesIO(blob_data))
 
-                # Filter for valid vote_average, release_date, and runtime >= 30
+        
                 filtered_df = df[
                     df['title'].notna() &
                     df['vote_average'].notna() &
@@ -68,7 +67,7 @@ def HttpTriggerGGSM(req: func.HttpRequest) -> func.HttpResponse:
 
                     poster_path = row.get("poster_path")
                     if pd.isna(poster_path) or not poster_path:
-                        poster_path = f"https://{storage_account}.blob.core.windows.net/{storage_container}/defaultimage"
+                        poster_path = f"https://{storage_account}.blob.core.windows.net/{storage_container}/defaultimage?{default_sas}"
                     else:
                         poster_path = f"{image_base_url}{poster_path}"
 
@@ -155,8 +154,6 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
         genre_bar_chart = base64.b64encode(buf1.read()).decode('utf-8')
         plt.close()
 
-
-
         # Use genres and keywords to create a features column (customize this)
         all_movies_df['id'] = all_movies_df['id'].astype(str)
         selected_movies = [str(mid) for mid in selected_movies]
@@ -164,9 +161,11 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
 
         all_movies_df = all_movies_df.reset_index(drop=True)
 
-        # Vectorize the features
-        tfidf_vectorizer = TfidfVectorizer(stop_words='english')
-        tfidf_matrix = tfidf_vectorizer.fit_transform(all_movies_df['features'])
+        # Load the vectorizer
+        tfidf_vectorizer = joblib.load("tfidf_vectorizer.joblib")
+
+        # Use the pre-trained vectorizer to transform features
+        tfidf_matrix = tfidf_vectorizer.transform(all_movies_df['features'])
 
         # Indicies of selected movies
         selected_indicies = all_movies_df[all_movies_df['title'].isin(selected_movies)].index.tolist()
@@ -196,8 +195,6 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
         else:
             genre_pie_chart = None
 
-     
-        
         # Compute cosine similarity between selected movies and all movies
         selected_tfidf_matrix = tfidf_matrix[selected_indicies]
         cosine_sim = cosine_similarity(selected_tfidf_matrix, tfidf_matrix)
