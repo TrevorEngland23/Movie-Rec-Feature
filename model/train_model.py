@@ -25,7 +25,7 @@ if blob_client.exists():
 else:
     all_movies_df = []
 
-all_movies_df = pd.concat(all_movies, ignore_index=True).drop_duplicates(subset=['title'])
+all_movies_df = pd.concat(all_movies_df, ignore_index=True).drop_duplicates(subset=['title'])
 all_movies_df = all_movies_df.fillna('')
 all_movies_df['features'] = (
     all_movies_df['genres'] * 3 + ' ' +
@@ -33,7 +33,7 @@ all_movies_df['features'] = (
     all_movies_df['overview']
 )
 
-vectorizer = TfidfVectorizer(stop_words='english')
+vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
 vectorizer.fit(all_movies_df['features'])
 
 joblib.dump(vectorizer, '../Azure-Functions/tfidf_vectorizer.joblib')

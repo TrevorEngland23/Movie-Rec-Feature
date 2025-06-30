@@ -198,7 +198,7 @@ def HttpTriggerMovieRecs(req: func.HttpRequest) -> func.HttpResponse:
         # Compute cosine similarity between selected movies and all movies
         selected_tfidf_matrix = tfidf_matrix[selected_indicies]
         cosine_sim = cosine_similarity(selected_tfidf_matrix, tfidf_matrix)
-        top_recommendations = cosine_sim.mean(axis=0)
+        top_recommendations = cosine_sim.max(axis=0)
 
         # Exclude selected movies from recommendations
         all_movies_df['similarity'] = top_recommendations
