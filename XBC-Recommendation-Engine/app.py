@@ -17,13 +17,10 @@ def index():
     genres_and_images = get_genre_names_and_image()
     return render_template("genre_selection.html", genres=genres_and_images)
 
-# @app.route('/submit-genre', methods=['POST'])
-
 @app.route('/liked-movies', methods=['GET', 'POST'])
 def select_movies():
     if request.method == 'POST':
         selected_genres = request.form.getlist('genres')
-        # print(f"Selected Genres from user: {selected_genres}")
         session['selected_genres'] = selected_genres
 
         azure_function_url = "https://capstone-funcapp.azurewebsites.net/api/HttpTriggerGGSM?"

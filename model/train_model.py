@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import joblib
 from azure.storage.blob import BlobServiceClient
 
-#
+# not ideal, but to avoid putting the model in either container will do it this way. No secrets are exposed.
 storage_account = "c964capstone1121312"
 storage_container = "tmdbfilteredgenres"
 account_key = "<STORAGE_ACCOUNT_KEY>" 
@@ -25,6 +25,7 @@ if blob_client.exists():
 else:
     all_movies_df = []
 
+# create a features column on the dataframe and train the model against the original dataset
 all_movies_df = pd.concat(all_movies_df, ignore_index=True).drop_duplicates(subset=['title'])
 all_movies_df = all_movies_df.fillna('')
 all_movies_df['features'] = (
