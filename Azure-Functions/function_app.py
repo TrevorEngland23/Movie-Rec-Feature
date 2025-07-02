@@ -16,6 +16,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 app = func.FunctionApp()
 
+# For all Blob storage operations, this Microsoft documentation was the aid: https://learn.microsoft.com/en-us/python/api/overview/azure/storage-blob-readme?view=azure-python
 credential = DefaultAzureCredential()
 storage_account = os.getenv("STORAGE_ACCOUNT")
 storage_container = os.getenv("STORAGE_CONTAINER")

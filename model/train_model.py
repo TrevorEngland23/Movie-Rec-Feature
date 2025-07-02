@@ -5,6 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import joblib
 from azure.storage.blob import BlobServiceClient
 
+# Source for guidance: https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html
 # not ideal, but to avoid putting the model in either container will do it this way. No secrets are exposed.
 storage_account = "c964capstone1121312"
 storage_container = "tmdbfilteredgenres"
